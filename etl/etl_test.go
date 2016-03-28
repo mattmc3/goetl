@@ -4,16 +4,16 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/mattmc3/goetl/datasource"
 	"github.com/mattmc3/goetl/etl"
-	"github.com/mattmc3/goetl/record"
 )
 
-type MemoryTestParams struct {
+type TestParams struct {
 	fields []string
 	data   [][]interface{}
 }
 
-var testCases = []MemoryTestParams{
+var testCases = []TestParams{
 	{
 		[]string{},
 		[][]interface{}{},
@@ -31,8 +31,8 @@ var testCases = []MemoryTestParams{
 
 func TestPushData(t *testing.T) {
 	for _, test := range testCases {
-		rdr := record.NewMemoryReader("testdata", test.data)
-		wtr := record.NewMemoryWriter()
+		rdr := datasource.NewMemoryReader("testdata", test.data)
+		wtr := datasource.NewMemoryWriter()
 		err := etl.PushData(rdr, wtr)
 		if err != nil {
 			t.Errorf(`Extract() errored: %v`, err)
@@ -45,7 +45,7 @@ func TestPushData(t *testing.T) {
 		rec, err := rdr.ReadNext()
 		if rec != nil {
 			t.Errorf(`Extract() did not consume all available reader records. %v`, rec)
-		} else if err != record.EndOfRecords {
+		} else if err != datasource.EndOfRecords {
 			t.Errorf(`Extract() errored: %v`, err)
 		}
 

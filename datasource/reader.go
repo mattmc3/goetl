@@ -1,4 +1,4 @@
-package record
+package datasource
 
 import (
 	"errors"
@@ -20,6 +20,8 @@ type Reader interface {
 	RecordType() string
 }
 
+// BaseReader handles some common functionality for a typical Reader
+// implementation.
 type BaseReader struct {
 	recordType   string
 	fields       map[string][]string

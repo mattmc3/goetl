@@ -1,4 +1,4 @@
-package record
+package datasource
 
 type MemoryReader struct {
 	Data [][]interface{}
@@ -18,8 +18,8 @@ func NewMemoryReader(recordType string, data [][]interface{}) *MemoryReader {
 	return &result
 }
 
-// ReadNext reads the next record if one is available. Wheh the end of the data
-// set is reached, the ErrEndOfs error is returned.
+// ReadNext reads the next record if one is available. When the end of the data
+// set is reached, the EndOfRecords error is returned.
 func (g *MemoryReader) ReadNext() ([]interface{}, error) {
 	idx := &g.recordNumber
 	if *idx >= len(g.Data) {
@@ -37,8 +37,8 @@ func (g *MemoryReader) ReadNext() ([]interface{}, error) {
 
 // MemoryWriter writes records to an in-memory data structure
 type MemoryWriter struct {
-	Data    map[string][]interface{}
-	records int
+	Data map[string][]interface{}
+	BaseWriter
 }
 
 // NewMemoryWriter constructor
@@ -48,11 +48,6 @@ func NewMemoryWriter() *MemoryWriter {
 		Data: data,
 	}
 	return &result
-}
-
-// RecordsWritten returns the total number of records added by the writer.
-func (g *MemoryWriter) RecordsWritten() int {
-	return g.records
 }
 
 // Write adds the records provided to the in-memory data structure.

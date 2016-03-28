@@ -1,10 +1,10 @@
-package record_test
+package datasource_test
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/mattmc3/goetl/record"
+	"github.com/mattmc3/goetl/datasource"
 )
 
 type DefaultFieldNameTestParams struct {
@@ -19,7 +19,7 @@ func TestGenerateDefaultFieldNames(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		actual := record.GenerateDefaultFieldNames(test.fields)
+		actual := datasource.GenerateDefaultFieldNames(test.fields)
 		if !reflect.DeepEqual(actual, test.expected) {
 			t.Errorf(`GenerateDefaultFieldNames(%v) = %v; want %v`, test.fields, actual, test.expected)
 		}

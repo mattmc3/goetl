@@ -1,16 +1,16 @@
 package etl
 
 import (
-	"github.com/mattmc3/goetl/record"
+	"github.com/mattmc3/goetl/datasource"
 )
 
 // PushData reads all records from the source and writes them to the
 // destination. Reader or Writer errors are returned if they occur.
-func PushData(source record.Reader, dest record.Writer) error {
+func PushData(source datasource.Reader, dest datasource.Writer) error {
 	for {
 		rec, err := source.ReadNext()
 		if err != nil {
-			if err == record.EndOfRecords {
+			if err == datasource.EndOfRecords {
 				break
 			} else {
 				return err
