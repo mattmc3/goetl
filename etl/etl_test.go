@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mattmc3/goetl/datasource"
+	"github.com/mattmc3/goetl"
 	"github.com/mattmc3/goetl/etl"
 )
 
@@ -21,18 +21,18 @@ var testCases = []TestParams{
 	{
 		[]string{"Field001", "Field002", "Field003"},
 		[][]interface{}{
-			[]interface{}{"a", "b", "c"},
-			[]interface{}{1, 2, 3},
-			[]interface{}{2, 4, 6},
-			[]interface{}{3, 6, 9},
+			{"a", "b", "c"},
+			{1, 2, 3},
+			{2, 4, 6},
+			{3, 6, 9},
 		},
 	},
 }
 
 func TestPushData(t *testing.T) {
 	for _, test := range testCases {
-		rdr := datasource.NewMemoryReader("testdata", test.data)
-		wtr := datasource.NewMemoryWriter()
+		rdr := goetl.NewMemoryReader("testdata", test.data)
+		wtr := goetl.NewMemoryWriter()
 		err := etl.PushData(rdr, wtr)
 		if err != nil {
 			t.Errorf(`Extract() errored: %v`, err)
@@ -45,7 +45,7 @@ func TestPushData(t *testing.T) {
 		rec, err := rdr.ReadNext()
 		if rec != nil {
 			t.Errorf(`Extract() did not consume all available reader records. %v`, rec)
-		} else if err != datasource.EndOfRecords {
+		} else if err != goetl.ErrEndOfRecords {
 			t.Errorf(`Extract() errored: %v`, err)
 		}
 

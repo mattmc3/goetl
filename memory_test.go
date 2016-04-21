@@ -1,15 +1,15 @@
-package datasource_test
+package goetl_test
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/mattmc3/goetl/datasource"
+	"github.com/mattmc3/goetl"
 )
 
 type ReaderTestParams struct {
 	recordType string
-	fields     []string
+	fieldNames []string
 	output     [][]interface{}
 }
 
@@ -30,10 +30,10 @@ var memoryTestCases = []MemoryTestParams{
 			"3x3 recs w/ header",
 			[]string{"Field001", "Field002", "Field003"},
 			[][]interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{1, 2, 3},
-				[]interface{}{2, 4, 6},
-				[]interface{}{3, 6, 9},
+				{"a", "b", "c"},
+				{1, 2, 3},
+				{2, 4, 6},
+				{3, 6, 9},
 			},
 		},
 	},
@@ -41,12 +41,12 @@ var memoryTestCases = []MemoryTestParams{
 
 func TestMemoryReader(t *testing.T) {
 	for _, test := range memoryTestCases {
-		rdr := datasource.NewMemoryReader(test.recordType, test.output)
+		rdr := goetl.NewMemoryReader(test.recordType, test.output)
 		VerifyReader(t, rdr, test.ReaderTestParams)
 	}
 }
 
-func VerifyReader(t *testing.T, rdr datasource.Reader, params ReaderTestParams) {
+func VerifyReader(t *testing.T, rdr goetl.Reader, params ReaderTestParams) {
 	for i := 0; i <= len(params.output); i++ {
 		actual, err := rdr.ReadNext()
 
@@ -56,16 +56,16 @@ func VerifyReader(t *testing.T, rdr datasource.Reader, params ReaderTestParams) 
 		}
 
 		if i >= len(params.output) {
-			if actual != nil || err != datasource.EndOfRecords {
-				t.Errorf(`ReadNext()#%v = (%v, %v); want (%v, %v)`, i, actual, err, nil, datasource.EndOfRecords)
+			if actual != nil || err != goetl.ErrEndOfRecords {
+				t.Errorf(`ReadNext()#%v = (%v, %v); want (%v, %v)`, i, actual, err, nil, goetl.ErrEndOfRecords)
 			}
 		} else {
 			if !reflect.DeepEqual(actual, params.output[i]) {
 				t.Errorf(`ReadNext()#%v = %v; want %v`, i, actual, params.output[i])
 			}
-			actualFields := rdr.Fields()
-			if !reflect.DeepEqual(actualFields, params.fields) {
-				t.Errorf(`Fields()#%v = %v; want %v`, i, actualFields, params.fields)
+			actualFields := rdr.FieldNames()
+			if !reflect.DeepEqual(actualFields, params.fieldNames) {
+				t.Errorf(`FieldNames()#%v = %v; want %v`, i, actualFields, params.fieldNames)
 			}
 		}
 	}
@@ -73,7 +73,7 @@ func VerifyReader(t *testing.T, rdr datasource.Reader, params ReaderTestParams) 
 
 func TestMemoryWriter(t *testing.T) {
 	for _, test := range memoryTestCases {
-		wtr := datasource.NewMemoryWriter()
+		wtr := goetl.NewMemoryWriter()
 		for i, rec := range test.output {
 			if i != wtr.RecordsWritten() {
 				t.Errorf(`RecordsWritten()#%v = %v; want %v`, i, i, wtr.RecordsWritten())
