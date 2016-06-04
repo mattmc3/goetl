@@ -53,11 +53,11 @@ type FieldDef struct {
 
 // FormatValue takes a value and applies the formatter for the
 // FieldDef to that value.
-func (g *FieldDef) FormatValue(value string) (string, error) {
-	if g.Formatter == nil {
+func (it *FieldDef) FormatValue(value string) (string, error) {
+	if it.Formatter == nil {
 		return value, nil
 	}
-	return g.Formatter(g, value)
+	return it.Formatter(it, value)
 }
 
 // NewFieldDef constructor
@@ -134,15 +134,15 @@ func NewReaderByLengths(recordType string, rdr io.Reader, fieldLengths []int) *R
 
 // ReadNext reads the next record if one is available. When the end of the data
 // set is reached, the EndOfRecords error is returned.
-// func (g *Reader) ReadNext() ([]interface{}, error) {
-// 	idx := &g.recordNumber
+// func (it *Reader) ReadNext() ([]interface{}, error) {
+// 	idx := &it.recordNumber
 // 	*idx++
 
 // 	var rec []string
 // 	var result []interface{}
 // 	var err error
 
-// 	rec, err = g.reader.Read()
+// 	rec, err = it.reader.Read()
 // 	result = slicex.ObjectifyStrings(rec)
 // 	if err != nil {
 // 		if err == io.EOF {
@@ -152,10 +152,10 @@ func NewReaderByLengths(recordType string, rdr io.Reader, fieldLengths []int) *R
 // 	}
 
 // 	if *idx == 1 {
-// 		if g.hasHeader {
-// 			g.fieldNames[g.recordType] = rec
+// 		if it.hasHeader {
+// 			it.fieldNames[it.recordType] = rec
 // 		} else {
-// 			g.fieldNames[g.recordType] = GenerateColumnNames(len(result), ColNumStyle)
+// 			it.fieldNames[it.recordType] = GenerateColumnNames(len(result), ColNumStyle)
 // 		}
 // 	}
 // 	return result, nil
@@ -175,9 +175,9 @@ func NewWriter(recordType string, wtr io.Writer) *Writer {
 }
 
 // Write outputs the record provided to a fixed width flatfile destination
-func (g *Writer) Write(recordType string, record []interface{}) error {
-	if recordType != g.recordType {
-		return fmt.Errorf("only able to write records of type '%v'; received '%v'", g.recordType, recordType)
+func (it *Writer) Write(recordType string, record []interface{}) error {
+	if recordType != it.recordType {
+		return fmt.Errorf("only able to write records of type '%v'; received '%v'", it.recordType, recordType)
 	}
 	byterecs := slicex.Byteify(record)
 
@@ -186,7 +186,7 @@ func (g *Writer) Write(recordType string, record []interface{}) error {
 		if err != nil {
 			return
 		}
-		_, err = g.writer.Write(buf)
+		_, err = it.writer.Write(buf)
 	}
 
 	for _, buf := range byterecs {
@@ -196,6 +196,6 @@ func (g *Writer) Write(recordType string, record []interface{}) error {
 }
 
 // RecordsWritten returns the total number of records added by the writer.
-func (g *Writer) RecordsWritten() int {
-	return g.records
+func (it *Writer) RecordsWritten() int {
+	return it.records
 }
